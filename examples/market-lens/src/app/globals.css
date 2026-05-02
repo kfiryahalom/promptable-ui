@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0B1120;
+  --card: #131f35;
+  --border: #1E2D45;
+  --text: #CBD5E1;
+  --muted: #64748B;
+  --gain: #10B981;
+  --loss: #F43F5E;
+  --accent: #38BDF8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Override the white widget card background for dark theme */
+.dark-widget {
+  background-color: var(--card) !important;
+  border-color: var(--border) !important;
+}
+
+/* Widget grid — make cards fill their grid cell */
+.react-grid-item > div {
+  height: 100%;
+}
+.react-grid-item > div > div {
+  height: 100%;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+/* Cyan resize handle matching the terminal theme */
+.react-resizable-handle {
+  background-image: none;
+}
+.react-resizable-handle::after {
+  content: '';
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 9px;
+  height: 9px;
+  border-right: 1.5px solid rgba(56, 189, 248, 0.35);
+  border-bottom: 1.5px solid rgba(56, 189, 248, 0.35);
+  border-radius: 1px;
+  transition: border-color 0.15s;
+}
+.react-resizable-handle:hover::after {
+  border-color: rgba(56, 189, 248, 0.85);
+}
+
+/* Drag placeholder in dark theme */
+.react-grid-item.react-grid-placeholder {
+  background: rgba(56, 189, 248, 0.08) !important;
+  border: 1px dashed rgba(56, 189, 248, 0.3) !important;
+  border-radius: 8px;
+}
