@@ -6,6 +6,57 @@ AI-customizable dashboard widgets for React. Users describe what they want in na
 
 ---
 
+## Live Examples
+
+Three full demos are deployed so you can explore the package without any setup:
+
+| App | Live Demo | Description |
+|-----|-----------|-------------|
+| `task-pulse` | [task-pulse-mu.vercel.app](https://task-pulse-mu.vercel.app) | Next.js + NextAuth + SQLite, two demo users (`user1@demo.com` / `password123`), `ServerAdapter` |
+| `fit-board` | [fit-board-tau.vercel.app](https://fit-board-tau.vercel.app) | No auth, `LocalStorageAdapter`, fitness/nutrition data |
+| `market-lens` | [market-lens-alpha.vercel.app](https://market-lens-alpha.vercel.app) | No auth, `LocalStorageAdapter`, dark terminal theme, market data |
+
+Source for all three lives in [`examples/`](./examples/).
+
+---
+
+## ⚠️ Security & Usage Notice
+
+**These demos were built for learning and exploration, not production use.** There are deliberate simplifications that introduce real security trade-offs. Read this before deploying your own copy or sharing the live links publicly.
+
+### The live demos run on a shared API key
+
+The hosted demos call Gemini via an API key that belongs to the repo author. Every "Generate" click you make costs real money from that quota. Please use the demos to understand the package, not to build on top of them or run automated tests against them.
+
+### If you deploy your own copy, you are the API key owner
+
+When you clone the repo and fill in `GEMINI_API_KEY` (or any other LLM key), every request to the `/api/promptable-ui/interpret` endpoint charges your account. The demo apps have **no rate limiting and no authentication on the interpret route** (fit-board and market-lens). Anyone who finds your deployment URL can trigger unlimited LLM calls at your expense. Before exposing a deployment publicly you should:
+
+- Add rate limiting to the `/api/promptable-ui/interpret` route (e.g. `@upstash/ratelimit`)
+- Put the app behind authentication, or restrict the interpret endpoint to authenticated users only
+- Set a spending cap on your LLM provider account
+
+### LLM-generated code runs in the browser (`chartType: 'custom'`)
+
+When a widget uses `chartType: 'custom'`, the LLM response includes a JavaScript function that is evaluated at runtime via `new Function(...)`. The sandbox only exposes `React` and `Recharts` — it does not have access to `fetch`, `localStorage`, or any other browser API. However, `new Function` is not a true security boundary: a crafted prompt could potentially produce code that escapes the sandbox through prototype pollution or other JavaScript tricks.
+
+**This means:** in any deployment that real users can access, you should only allow trusted users to trigger AI customization, or disable `chartType: 'custom'` entirely if untrusted input is a concern.
+
+### Demo credentials and ephemeral data
+
+The task-pulse demo uses hardcoded credentials (`user1@demo.com` / `password123`) that are visible in this README and in the source code. The SQLite database on the Vercel deployment resets on every cold start. **Do not store anything real in the task-pulse demo.** These credentials exist solely so you can try the login flow without creating an account.
+
+### Summary
+
+| Risk | Affected demos | Mitigation before going to production |
+|------|---------------|---------------------------------------|
+| Unlimited LLM spend if URL is public | fit-board, market-lens | Add auth + rate limiting to interpret route |
+| LLM-generated code execution | All three | Restrict AI-customize to trusted users, or disable `custom` chart type |
+| Hardcoded demo credentials | task-pulse | Replace with a real auth system and a real database |
+| Ephemeral storage | task-pulse | Replace SQLite with a persistent database |
+
+---
+
 ## Install
 
 ```bash
@@ -260,23 +311,6 @@ function Widget({ data }) {
     )
   );
 }
-```
-
----
-
-## Examples
-
-Three full examples live in `examples/`:
-
-| App | Live Demo | Description |
-|-----|-----------|-------------|
-| `task-pulse` | [task-pulse-mu.vercel.app](https://task-pulse-mu.vercel.app) | Next.js + NextAuth + SQLite, two demo users (`user1@demo.com` / `password123`), `ServerAdapter` |
-| `fit-board` | [fit-board-tau.vercel.app](https://fit-board-tau.vercel.app) | No auth, `LocalStorageAdapter`, fitness/nutrition data |
-| `market-lens` | [market-lens-alpha.vercel.app](https://market-lens-alpha.vercel.app) | No auth, `LocalStorageAdapter`, dark terminal theme, market data |
-
-Run any example locally:
-```bash
-cd examples/task-pulse && pnpm dev
 ```
 
 ---
