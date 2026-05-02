@@ -40,8 +40,8 @@ importers:
         specifier: ^14.2.5
         version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       promptable-ui:
-        specifier: workspace:*
-        version: link:../..
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(recharts@2.15.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -92,8 +92,8 @@ importers:
         specifier: ^14.2.5
         version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       promptable-ui:
-        specifier: workspace:*
-        version: link:../..
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(recharts@2.15.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -153,8 +153,8 @@ importers:
         specifier: ^4.24.7
         version: 4.24.14(next@14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       promptable-ui:
-        specifier: workspace:*
-        version: link:../..
+        specifier: ^0.1.0
+        version: 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(recharts@2.15.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -1361,6 +1361,13 @@ packages:
 
   pretty-format@3.8.0:
     resolution: {integrity: sha512-WuxUnVtlWL1OfZFQFuqvnvs6MiAGk9UNsBostyBOB0Is9wb5uRESevA6rnl/rkksXaGX3GzZhPup5d6Vp1nFew==}
+
+  promptable-ui@0.1.0:
+    resolution: {integrity: sha512-HWPopTaTUgxr+xrU8qwusarF8IGnv/95cvJS4IHT7JlpHlGdlfVl3My5iC7A0eliRKJBa3+XOhqH/qCOrN2PbQ==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+      recharts: ^2.0.0
 
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
@@ -2743,6 +2750,12 @@ snapshots:
       tunnel-agent: 0.6.0
 
   pretty-format@3.8.0: {}
+
+  promptable-ui@0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(recharts@2.15.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      recharts: 2.15.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
   prop-types@15.8.1:
     dependencies:
