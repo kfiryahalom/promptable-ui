@@ -268,13 +268,13 @@ function Widget({ data }) {
 
 Three full examples live in `examples/`:
 
-| App | Description |
-|-----|-------------|
-| `task-pulse` | Next.js + NextAuth + SQLite, two demo users, `ServerAdapter` |
-| `fit-board` | No auth, `LocalStorageAdapter`, fitness/nutrition data |
-| `market-lens` | No auth, `LocalStorageAdapter`, dark terminal theme, market data |
+| App | Live Demo | Description |
+|-----|-----------|-------------|
+| `task-pulse` | [task-pulse-mu.vercel.app](https://task-pulse-mu.vercel.app) | Next.js + NextAuth + SQLite, two demo users (`user1@demo.com` / `password123`), `ServerAdapter` |
+| `fit-board` | [fit-board-tau.vercel.app](https://fit-board-tau.vercel.app) | No auth, `LocalStorageAdapter`, fitness/nutrition data |
+| `market-lens` | [market-lens-alpha.vercel.app](https://market-lens-alpha.vercel.app) | No auth, `LocalStorageAdapter`, dark terminal theme, market data |
 
-Run any example:
+Run any example locally:
 ```bash
 cd examples/task-pulse && pnpm dev
 ```
