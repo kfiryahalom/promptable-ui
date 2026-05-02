@@ -1,11 +1,15 @@
 import Database from 'better-sqlite3';
+import bcrypt from 'bcryptjs';
 import path from 'path';
 
 let db: Database.Database | null = null;
 
 export function getDb(): Database.Database {
   if (!db) {
-    const dbPath = path.join(process.cwd(), 'data.sqlite');
+    // Vercel's filesystem is read-only except /tmp
+    const dbPath = process.env.VERCEL
+      ? '/tmp/data.sqlite'
+      : path.join(process.cwd(), 'data.sqlite');
     db = new Database(dbPath);
     db.exec(`
       CREATE TABLE IF NOT EXISTS users (
@@ -29,6 +33,22 @@ export function getDb(): Database.Database {
         updated_at TEXT NOT NULL DEFAULT (datetime('now'))
       );
     `);
+    seedDemoUsers(db);
   }
   return db;
+}
+
+function seedDemoUsers(db: Database.Database) {
+  for (const { email, password } of [
+    { email: 'user1@demo.com', password: 'password123' },
+    { email: 'user2@demo.com', password: 'password123' },
+  ]) {
+    const exists = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+    if (!exists) {
+      db.prepare('INSERT INTO users (email, password) VALUES (?, ?)').run(
+        email,
+        bcrypt.hashSync(password, 10)
+      );
+    }
+  }
 }
