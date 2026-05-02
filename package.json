@@ -1,14 +1,12 @@
 {
-  "name": "dynamicView",
+  "name": "promptable-ui-monorepo",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
+  "private": true,
   "scripts": {
-    "build": "tsc"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "typescript": "^5.5.3"
-  },
-  "private": true
+    "dev":         "pnpm --filter task-pulse dev",
+    "dev:market":  "pnpm --filter market-lens dev",
+    "dev:fit":     "pnpm --filter fit-board dev",
+    "build":       "pnpm -r build",
+    "seed":        "pnpm --filter task-pulse seed"
+  }
 }

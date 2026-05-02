@@ -1,11 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build outputs
 /tmp
 /out-tsc
+dist/
+.next/
+*.tsbuildinfo
 
-/node_modules
+# Package manager debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+
+# Yarn PnP
 /.pnp
 .pnp.js
 
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# macOS
+.DS_Store
+
+# IDE
 .vscode/*
+.idea/
+*.iml
+
+# Playwright MCP artifacts
+.playwright-mcp/
+
+# SQLite databases
+*.sqlite
+*.sqlite3
+*.db
+
+# Claude Code local settings
+.claude/settings.local.json
