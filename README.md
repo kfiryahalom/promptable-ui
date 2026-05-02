@@ -2,7 +2,7 @@
 
 AI-customizable dashboard widgets for React. Users describe what they want in natural language — your LLM or MCP server returns a `WidgetConfig` — the package renders it.
 
-**Bring your own LLM.** The package never calls any external AI service directly.
+**Bring your own LLM.** The package has no dependency on any AI provider. It works with OpenAI, Anthropic, Google Gemini, Mistral, a local Ollama instance, or anything else — you wire up the `onPrompt` callback to whatever model or endpoint you already use, and the package just handles the rendering.
 
 ---
 
@@ -18,42 +18,7 @@ Three full demos are deployed so you can explore the package without any setup:
 
 Source for all three lives in [`examples/`](./examples/).
 
----
-
-## ⚠️ Security & Usage Notice
-
-**These demos were built for learning and exploration, not production use.** There are deliberate simplifications that introduce real security trade-offs. Read this before deploying your own copy or sharing the live links publicly.
-
-### The live demos run on a shared API key
-
-The hosted demos call Gemini via an API key that belongs to the repo author. Every "Generate" click you make costs real money from that quota. Please use the demos to understand the package, not to build on top of them or run automated tests against them.
-
-### If you deploy your own copy, you are the API key owner
-
-When you clone the repo and fill in `GEMINI_API_KEY` (or any other LLM key), every request to the `/api/promptable-ui/interpret` endpoint charges your account. The demo apps have **no rate limiting and no authentication on the interpret route** (fit-board and market-lens). Anyone who finds your deployment URL can trigger unlimited LLM calls at your expense. Before exposing a deployment publicly you should:
-
-- Add rate limiting to the `/api/promptable-ui/interpret` route (e.g. `@upstash/ratelimit`)
-- Put the app behind authentication, or restrict the interpret endpoint to authenticated users only
-- Set a spending cap on your LLM provider account
-
-### LLM-generated code runs in the browser (`chartType: 'custom'`)
-
-When a widget uses `chartType: 'custom'`, the LLM response includes a JavaScript function that is evaluated at runtime via `new Function(...)`. The sandbox only exposes `React` and `Recharts` — it does not have access to `fetch`, `localStorage`, or any other browser API. However, `new Function` is not a true security boundary: a crafted prompt could potentially produce code that escapes the sandbox through prototype pollution or other JavaScript tricks.
-
-**This means:** in any deployment that real users can access, you should only allow trusted users to trigger AI customization, or disable `chartType: 'custom'` entirely if untrusted input is a concern.
-
-### Demo credentials and ephemeral data
-
-The task-pulse demo uses hardcoded credentials (`user1@demo.com` / `password123`) that are visible in this README and in the source code. The SQLite database on the Vercel deployment resets on every cold start. **Do not store anything real in the task-pulse demo.** These credentials exist solely so you can try the login flow without creating an account.
-
-### Summary
-
-| Risk | Affected demos | Mitigation before going to production |
-|------|---------------|---------------------------------------|
-| Unlimited LLM spend if URL is public | fit-board, market-lens | Add auth + rate limiting to interpret route |
-| LLM-generated code execution | All three | Restrict AI-customize to trusted users, or disable `custom` chart type |
-| Hardcoded demo credentials | task-pulse | Replace with a real auth system and a real database |
-| Ephemeral storage | task-pulse | Replace SQLite with a persistent database |
+> **⚠️ Demo notice:** These examples were built for learning purposes only. They have known security limitations — no rate limiting, weak sandboxing, and shared API keys. Do not use them as a base for production. See [Security & Disclaimers](#security--disclaimers) at the bottom for the full picture.
 
 ---
 
@@ -312,6 +277,57 @@ function Widget({ data }) {
   );
 }
 ```
+
+---
+
+## Security & Disclaimers
+
+The demo apps were built for learning purposes. They demonstrate the package's capabilities but deliberately skip production-grade hardening to keep the code simple and readable. Do not treat them as a base for production.
+
+### The live demos run on a shared API key
+
+The hosted demos happen to use Google Gemini, but that is just the choice made for these examples — the package itself works with any LLM. Every "Generate" click calls Gemini via an API key paid for by the repo author. The key has a hard spending cap of around $1 — intentionally very low. Once that quota is gone, the AI features stop working for everyone until it resets, and the only way to try the demos will be to clone the repo and supply your own key.
+
+Please use the demos to explore the package, not to run automated tests or hammer the generate button repeatedly. The goal is to keep these demos live and accessible for as many people as possible. That only works if everyone uses them with care.
+
+### Self-hosting means you own the API costs
+
+When you clone the repo and wire up your own LLM key (Gemini, OpenAI, Anthropic, or any other), every call to `/api/promptable-ui/interpret` charges your account. The fit-board and market-lens demos have **no authentication and no rate limiting** on that route. If you expose a deployment publicly, anyone who finds the URL can trigger unlimited LLM calls at your expense.
+
+Before making a self-hosted copy public you should:
+- Add rate limiting to the interpret route (e.g. [`@upstash/ratelimit`](https://github.com/upstash/ratelimit))
+- Require authentication before the route is reachable, or restrict it to signed-in users only
+- Set a hard spending cap on your LLM provider account as a last-resort backstop
+
+### `new Function(...)` is not a real sandbox
+
+When `chartType: 'custom'` is used, the LLM returns a JavaScript function that runs in the browser via `new Function(...)`. The generated code is given access only to `React` and `Recharts`, and it runs inside an error boundary. However, `new Function` does not isolate memory or prevent prototype pollution — a carefully crafted prompt could potentially escape the intended scope.
+
+In any deployment where untrusted users can type prompts, you should either restrict AI customization to trusted users, or avoid `chartType: 'custom'` entirely. A proper fix would run generated code inside a sandboxed `<iframe>` with a strict Content Security Policy.
+
+### Demo credentials and ephemeral storage
+
+The task-pulse demo uses hardcoded credentials (`user1@demo.com` / `password123`) that are visible in this README and in the source. The SQLite database resets on every Vercel cold start. Do not store anything real in it. The credentials exist only to let you try the login flow.
+
+---
+
+## Security roadmap
+
+We are aware of the limitations above. No timeline or commitment is attached to any of them, but these are the areas where the work would make the biggest difference:
+
+| Area | What a proper fix looks like |
+|------|------------------------------|
+| Rate limiting | Per-user or per-IP budget on the interpret route (Upstash Redis or similar) |
+| Auth on no-auth demos | Even a lightweight API-key check on the interpret route would prevent open abuse |
+| `custom` widget sandbox | Sandboxed `<iframe>` with `sandbox` attribute + CSP blocking network access |
+| LLM output validation | Zod schema on the `WidgetConfig` returned by the LLM before it is applied |
+| Persistent storage | Hosted database (Postgres, Turso) instead of ephemeral SQLite in task-pulse |
+
+---
+
+## Contributing
+
+If any of the above interests you, contributions and collaboration are very welcome. We have not solved these problems yet, and we are open to working with anyone who wants to help move things forward. Open an issue or a pull request.
 
 ---
 
